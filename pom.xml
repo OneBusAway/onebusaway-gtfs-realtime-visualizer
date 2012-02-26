@@ -66,6 +66,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
+        <version>1.5</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -79,7 +80,21 @@
                   <mainClass>org.onebusaway.gtfs_realtime.visualizer.VisualizerMain</mainClass>
                 </transformer>
               </transformers>
-            </configuration>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/DEPENDENCIES</exclude>
+                    <exclude>META-INF/LICENSE*</exclude>
+                    <exclude>META-INF/NOTICE*</exclude>
+                    <exclude>META-INF/eclipse.inf</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>            
           </execution>
         </executions>
       </plugin>
