@@ -26,8 +26,12 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VisualizerServer {
+
+  private static final Logger _log = LoggerFactory.getLogger(VisualizerServer.class);
 
   private DataServlet _dataServlet;
 
@@ -62,6 +66,19 @@ public class VisualizerServer {
     _server.setHandler(handlers);
 
     _server.start();
+
+    StringBuilder b = new StringBuilder();
+    b.append("\n");
+    b.append("=======================================================\n");
+    b.append("\n");
+    b.append("  The GTFS-realtime visualizer server has\n");
+    b.append("  started.  Check it out at:\n");
+    b.append("\n");
+    b.append("    http://localhost:" + _port + "/\n");
+    b.append("\n");
+    b.append("=======================================================\n");
+
+    _log.info(b.toString());
   }
 
   @PreDestroy

@@ -1,28 +1,46 @@
-function init() {
+/*
+ * Copyright (C) 2012 Brian Ferris <bdferris@onebusaway.org>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-	var animation_steps = 20;
-		
+function Init() {
+
 	/**
 	 * Create a custom-styled Googe Map with no labels and custom color scheme.
 	 */
-	var map_style = [ {
-		elementType : "labels",
-		stylers : [ {
-			visibility : "off"
-		} ]
-	}, {
-		stylers : [ {
-			saturation : -69
-		} ]
-	} ];
-	var map_canvas = document.getElementById("map_canvas");
-	var myOptions = {
-		center : new google.maps.LatLng(42.349, -71.059),
-		zoom : 8,
-		styles : map_style,
-		mapTypeId : google.maps.MapTypeId.ROADMAP
+	var CreateMap = function() {
+		var map_style = [ {
+			elementType : "labels",
+			stylers : [ {
+				visibility : "off"
+			} ]
+		}, {
+			stylers : [ {
+				saturation : -69
+			} ]
+		} ];
+		var map_canvas = document.getElementById("map_canvas");
+		var myOptions = {
+			center : new google.maps.LatLng(42.349, -71.059),
+			zoom : 8,
+			styles : map_style,
+			mapTypeId : google.maps.MapTypeId.ROADMAP
+		};
+		return new google.maps.Map(map_canvas, myOptions);
 	};
-	var map = new google.maps.Map(map_canvas, myOptions);
+	
+	var map = CreateMap();
 
 	/**
 	 * We want to assign a random color to each bus in our visualization. We
@@ -48,7 +66,7 @@ function init() {
 		case 5:
 			return [ v, a, b ];
 		}
-	}
+	};
 
 	var HsvToRgbString = function(h, s, v) {
 		var rgb = HsvToRgb(h, s, v);
@@ -66,64 +84,41 @@ function init() {
 		return HsvToRgbString(h, 0.90, 0.90)
 	};
 
-	var vehicles_by_id = {};
-	
-	var icon = new google.maps.MarkerImage('http://localhost:8080/WhiteCircle8.png', null, null, new google.maps.Point(4, 4));
+	var icon = new google.maps.MarkerImage(
+			'http://localhost:8080/WhiteCircle8.png', null, null,
+			new google.maps.Point(4, 4));
 
-	var updateVehicle = function(v, updates) {
-		var id = v.id;
-		if (!(id in vehicles_by_id)) {
-			var point = new google.maps.LatLng(v.lat, v.lon);
-			var path = new google.maps.MVCArray();
-			path.push(point);
-			var marker_opts = {
-					clickable: false,
-					draggable: false,
-					flat: false,
-					icon: icon,
-					map: map,
-					position: point,
-			};
-			var polyline_opts = {
-				clickable : false,
-				editable : false,
-				map : map,
-				path : path,
-				strokeColor : NextRandomColor(),
-				strokeOpacity : 0.8,
-				strokeWeight : 4
-			};
-			vehicles_by_id[id] = {
-				id: id,
-				marker: new google.maps.Marker(marker_opts),
-				polyline : new google.maps.Polyline(polyline_opts),
-				path : path,
-				lastUpdate : -1
-			};
-		}
-		var vehicle = vehicles_by_id[id];
-		if (vehicle.lastUpdate >= v.lastUpdate) {
-			return;
-		}
-		vehicle.lastUpdate = v.lastUpdate
+	var CreateVehicle = function(v_data) {
+		var point = new google.maps.LatLng(v_data.lat, v_data.lon);
+		var path = new google.maps.MVCArray();
+		path.push(point);
+		var marker_opts = {
+			clickable : false,
+			draggable : false,
+			flat : false,
+			icon : icon,
+			map : map,
+			position : point,
+		};
+		var polyline_opts = {
+			clickable : false,
+			editable : false,
+			map : map,
+			path : path,
+			strokeColor : NextRandomColor(),
+			strokeOpacity : 0.8,
+			strokeWeight : 4
+		};
+		return {
+			id : v_data.id,
+			marker : new google.maps.Marker(marker_opts),
+			polyline : new google.maps.Polyline(polyline_opts),
+			path : path,
+			lastUpdate : v_data.lastUpdate
+		};
+	};
 
-		var path = vehicle.path;
-		var last = path.getAt(path.getLength() - 1);
-		path.push(last);
-
-		var lat_delta = (v.lat - last.lat()) / animation_steps;
-		var lon_delta = (v.lon - last.lng()) / animation_steps;
-
-		if (lat_delta != 0 && lon_delta != 0) {
-			for ( var i = 0; i < animation_steps; ++i) {				
-				var lat = last.lat() + lat_delta * (i + 1);
-				var lon = last.lng() + lon_delta * (i + 1);
-				updates[i].push(CreateUpdateStep(vehicle, lat, lon));
-			}			
-		}
-	}
-
-	function CreateUpdateStep(vehicle, lat, lon) {
+	function CreateVehicleUpdateOperation(vehicle, lat, lon) {
 		return function() {
 			var point = new google.maps.LatLng(lat, lon);
 			vehicle.marker.setPosition(point);
@@ -131,7 +126,68 @@ function init() {
 			var index = path.getLength() - 1;
 			path.setAt(index, point);
 		};
-	}
+	};
+	
+	var vehicles_by_id = {};
+	var animation_steps = 20;
+
+	function UpdateVehicle(v_data, updates) {
+		var id = v_data.id;
+		if (!(id in vehicles_by_id)) {
+			vehicles_by_id[id] = CreateVehicle(v_data);
+		}
+		var vehicle = vehicles_by_id[id];
+		if (vehicle.lastUpdate >= v_data.lastUpdate) {
+			return;
+		}
+		vehicle.lastUpdate = v_data.lastUpdate
+
+		var path = vehicle.path;
+		var last = path.getAt(path.getLength() - 1);
+		path.push(last);
+
+		var lat_delta = (v_data.lat - last.lat()) / animation_steps;
+		var lon_delta = (v_data.lon - last.lng()) / animation_steps;
+
+		if (lat_delta != 0 && lon_delta != 0) {
+			for ( var i = 0; i < animation_steps; ++i) {
+				var lat = last.lat() + lat_delta * (i + 1);
+				var lon = last.lng() + lon_delta * (i + 1);
+				var op = CreateVehicleUpdateOperation(vehicle, lat, lon);
+				updates[i].push(op);
+			}
+		}
+	};
+	
+	var first_update = true;
+	
+	var ProcessVehicleData = function(data) {
+		var vehicles = jQuery.parseJSON(data);
+		var updates = [];
+		var bounds = new google.maps.LatLngBounds();
+		for ( var i = 0; i < animation_steps; ++i) {
+			updates.push(new Array());
+		}
+		jQuery.each(vehicles, function() {
+			UpdateVehicle(this, updates);
+			bounds.extend(new google.maps.LatLng(this.lat, this.lon));
+		});
+		if (first_update && ! bounds.isEmpty()) {
+			map.fitBounds(bounds);
+			first_update = false;
+		}
+		var applyUpdates = function() {
+			if (updates.length == 0) {
+				return;
+			}
+			var fs = updates.shift();
+			for ( var i = 0; i < fs.length; i++) {
+				fs[i]();
+			}
+			setTimeout(applyUpdates, 1);
+		};
+		setTimeout(applyUpdates, 1);	
+	};
 
 	/**
 	 * We create a WebSocket to listen for vehilce position updates from our
@@ -144,27 +200,7 @@ function init() {
 		}
 		ws.onmessage = function(e) {
 			console.log("Got WebSockets message");
-			var vehicles = jQuery.parseJSON(e.data);
-			var updates = [];
-			for ( var i = 0; i < animation_steps; ++i) {
-				updates.push(new Array());
-			}
-			jQuery.each(vehicles, function() {
-				updateVehicle(this, updates);
-			});
-			console.log("Handle WebSockets message");
-			var applyUpdates = function() {
-				console.log("apply updates");
-				if (updates.length == 0) {
-					return;
-				}
-				var fs = updates.shift();
-				for (var i=0; i<fs.length; i++) {
-					fs[i]();
-				}
-				setTimeout(applyUpdates, 1);
-			};
-			setTimeout(applyUpdates, 1);
+			ProcessVehicleData(e.data);
 		}
 		ws.onclose = function() {
 			console.log("WebSockets connection closed");
