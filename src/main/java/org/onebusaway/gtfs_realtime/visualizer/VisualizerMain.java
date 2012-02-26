@@ -62,13 +62,13 @@ public class VisualizerMain {
         cli.getOptionValue(ARG_VEHICLE_POSITIONS_URL)));
 
     injector.getInstance(VisualizerServer.class);
-    
+
     LifecycleService lifecycleService = injector.getInstance(LifecycleService.class);
     lifecycleService.start();
   }
 
   private void printUsage() {
-
+    CommandLineInterfaceLibrary.printUsage(getClass());
   }
 
   private void buildOptions(Options options) {
