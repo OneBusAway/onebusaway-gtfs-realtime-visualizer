@@ -10,7 +10,26 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>onebusaway-gtfs-realtime-visualizer</name>
   <description>A visualizer for GTFS-realtime transit data.</description>
+    <url>https://github.com/OneBusAway/onebusaway-gtfs-realtime-visualizer/wiki/</url>
 
+  <repositories>
+    <repository>
+      <id>public.onebusaway.org</id>
+      <url>http://nexus.onebusaway.org/content/groups/public/</url>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:git:http://github.com/OneBusAway/onebusaway-gtfs-realtime-visualizer.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/OneBusAway/onebusaway-gtfs-realtime-visualizer.git</developerConnection>
+    <url>http://github.com/OneBusAway/onebusaway-gtfs-realtime-visualizer</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/OneBusAway/onebusaway-gtfs-realtime-visualizer/issues</url>
+  </issueManagement>
+  
   <properties>
     <jetty.version>8.1.1.v20120215</jetty.version>
   </properties>
