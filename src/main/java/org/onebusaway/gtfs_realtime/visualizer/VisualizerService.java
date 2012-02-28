@@ -92,29 +92,31 @@ public class VisualizerService {
     FeedMessage feed = FeedMessage.parseFrom(_vehiclePositionsUrl.openStream());
 
     for (FeedEntity entity : feed.getEntityList()) {
-      VehiclePosition vehicle = entity.getVehicle();
-      if (vehicle == null) {
+      if (!entity.hasVehicle()) {
         continue;
       }
-      if (vehicle.hasPosition()) {
-        Position position = vehicle.getPosition();
-        Vehicle v = new Vehicle();
-        v.setId(entity.getId());
-        v.setLat(position.getLatitude());
-        v.setLon(position.getLongitude());
-        v.setLastUpdate(System.currentTimeMillis());
-
-        Vehicle existing = _vehiclesById.get(v.getId());
-        if (existing == null || existing.getLat() != v.getLat()
-            || existing.getLon() != v.getLon()) {
-          _vehiclesById.put(v.getId(), v);
-          update = true;
-        } else {
-          v.setLastUpdate(existing.getLastUpdate());
-        }
-
-        vehicles.add(v);
+      VehiclePosition vehicle = entity.getVehicle();
+      if (!vehicle.hasPosition()) {
+        continue;
       }
+      Position position = vehicle.getPosition();
+      Vehicle v = new Vehicle();
+      v.setId(entity.getId());
+      v.setLat(position.getLatitude());
+      v.setLon(position.getLongitude());
+      v.setLastUpdate(System.currentTimeMillis());
+
+      Vehicle existing = _vehiclesById.get(v.getId());
+      if (existing == null || existing.getLat() != v.getLat()
+          || existing.getLon() != v.getLon()) {
+        _vehiclesById.put(v.getId(), v);
+        update = true;
+      } else {
+        v.setLastUpdate(existing.getLastUpdate());
+      }
+
+      vehicles.add(v);
+
     }
 
     if (update) {

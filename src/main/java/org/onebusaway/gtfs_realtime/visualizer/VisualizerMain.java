@@ -60,7 +60,6 @@ public class VisualizerMain {
     VisualizerService service = injector.getInstance(VisualizerService.class);
     service.setVehiclePositionsUrl(new URL(
         cli.getOptionValue(ARG_VEHICLE_POSITIONS_URL)));
-
     injector.getInstance(VisualizerServer.class);
 
     LifecycleService lifecycleService = injector.getInstance(LifecycleService.class);
