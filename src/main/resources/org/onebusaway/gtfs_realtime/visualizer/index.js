@@ -15,6 +15,8 @@
  */
 
 function Init() {
+  
+  var hostandport = window.location.hostname + ':' + window.location.port;
 
 	/**
 	 * Create a custom-styled Googe Map with no labels and custom color scheme.
@@ -85,7 +87,7 @@ function Init() {
 	};
 
 	var icon = new google.maps.MarkerImage(
-			'http://localhost:8080/WhiteCircle8.png', null, null,
+			'http://' + hostandport + '/WhiteCircle8.png', null, null,
 			new google.maps.Point(4, 4));
 
 	var CreateVehicle = function(v_data) {
@@ -194,7 +196,7 @@ function Init() {
 	 * webserver.
 	 */
 	if ("WebSocket" in window) {
-		var ws = new WebSocket("ws://localhost:8080/data.json");
+		var ws = new WebSocket("ws://" + hostandport + "/data.json");
 		ws.onopen = function() {
 			console.log("WebSockets connection opened");
 		}
