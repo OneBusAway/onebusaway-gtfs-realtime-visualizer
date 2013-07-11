@@ -4,13 +4,13 @@
   <parent>
     <artifactId>onebusaway</artifactId>
     <groupId>org.onebusaway</groupId>
-    <version>1.1.7</version>
+    <version>1.1.9</version>
   </parent>
   <artifactId>onebusaway-gtfs-realtime-visualizer</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>onebusaway-gtfs-realtime-visualizer</name>
   <description>A visualizer for GTFS-realtime transit data.</description>
-    <url>https://github.com/OneBusAway/onebusaway-gtfs-realtime-visualizer/wiki/</url>
+  <url>https://github.com/OneBusAway/onebusaway-gtfs-realtime-visualizer/wiki/</url>
 
   <repositories>
     <repository>
@@ -29,9 +29,11 @@
     <system>GitHub</system>
     <url>https://github.com/OneBusAway/onebusaway-gtfs-realtime-visualizer/issues</url>
   </issueManagement>
-  
+
   <properties>
-    <jetty.version>8.1.1.v20120215</jetty.version>
+    <jetty.version>8.1.11.v20130520</jetty.version>
+    <!-- These properties are primarily used in configuring joint integration tests -->
+    <org_onebusaway_test_port>9900</org_onebusaway_test_port>
   </properties>
   <dependencies>
     <dependency>
@@ -113,7 +115,7 @@
                   </excludes>
                 </filter>
               </filters>
-            </configuration>            
+            </configuration>
           </execution>
         </executions>
       </plugin>

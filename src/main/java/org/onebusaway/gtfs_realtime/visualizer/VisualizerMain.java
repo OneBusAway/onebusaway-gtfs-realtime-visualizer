@@ -15,7 +15,7 @@
  */
 package org.onebusaway.gtfs_realtime.visualizer;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,7 +33,7 @@ import com.google.inject.Module;
 public class VisualizerMain {
 
   private static final String ARG_VEHICLE_POSITIONS_URL = "vehiclePositionsUrl";
-
+  
   public static void main(String[] args) throws Exception {
     VisualizerMain m = new VisualizerMain();
     m.run(args);
@@ -58,7 +58,7 @@ public class VisualizerMain {
     injector.injectMembers(this);
 
     VisualizerService service = injector.getInstance(VisualizerService.class);
-    service.setVehiclePositionsUrl(new URL(
+    service.setVehiclePositionsUri(new URI(
         cli.getOptionValue(ARG_VEHICLE_POSITIONS_URL)));
     injector.getInstance(VisualizerServer.class);
 
@@ -73,5 +73,4 @@ public class VisualizerMain {
   private void buildOptions(Options options) {
     options.addOption(ARG_VEHICLE_POSITIONS_URL, true, "");
   }
-
 }

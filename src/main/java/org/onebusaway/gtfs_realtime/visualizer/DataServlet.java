@@ -44,6 +44,8 @@ public class DataServlet extends WebSocketServlet implements VehicleListener {
 
   private static final Logger _log = LoggerFactory.getLogger(DataServlet.class);
 
+  private static final int WEB_SOCKET_IDLE_TIMEOUT_MS = 120 * 1000;
+
   private VisualizerService _visualierService;
 
   private Set<DataWebSocket> _sockets = new ConcurrentHashSet<DataWebSocket>();
@@ -67,9 +69,9 @@ public class DataServlet extends WebSocketServlet implements VehicleListener {
 
   @Override
   public void handleVehicles(List<Vehicle> vehicles) {
-    _vehicles = getVehiclesAsString(vehicles);
+    String vehiclesAsJsonString = getVehiclesAsString(vehicles);
     for (DataWebSocket socket : _sockets) {
-      socket.sendVehicles();
+      socket.sendVehicles(vehiclesAsJsonString);
     }
   }
 
@@ -80,11 +82,21 @@ public class DataServlet extends WebSocketServlet implements VehicleListener {
     PrintWriter writer = resp.getWriter();
     writer.write(_vehicles);
   }
-
+  
   @Override
   public WebSocket doWebSocketConnect(HttpServletRequest request,
       String protocol) {
     return new DataWebSocket();
+  }
+
+  public void addSocket(DataWebSocket dataWebSocket) {
+    String vehiclesAsJsonString = getVehiclesAsString(_visualierService.getAllVehicles());
+    dataWebSocket.sendVehicles(vehiclesAsJsonString);
+    _sockets.add(dataWebSocket);
+  }
+
+  public void removeSocket(DataWebSocket dataWebSocket) {
+    _sockets.remove(dataWebSocket);
   }
 
   private String getVehiclesAsString(List<Vehicle> vehicles) {
@@ -111,19 +123,18 @@ public class DataServlet extends WebSocketServlet implements VehicleListener {
     @Override
     public void onOpen(Connection connection) {
       _connection = connection;
-      _sockets.add(this);
-
-      sendVehicles();
+      _connection.setMaxIdleTime(WEB_SOCKET_IDLE_TIMEOUT_MS);
+      addSocket(this);
     }
 
     @Override
     public void onClose(int closeCode, String message) {
-      _sockets.remove(this);
+      removeSocket(this);
     }
 
-    public void sendVehicles() {
+    public void sendVehicles(String vehiclesAsJsonString) {
       try {
-        _connection.sendMessage(_vehicles);
+        _connection.sendMessage(vehiclesAsJsonString);
       } catch (IOException ex) {
         _log.warn("error sending WebSocket message", ex);
       }
