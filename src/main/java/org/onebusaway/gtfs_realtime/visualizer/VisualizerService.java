@@ -90,6 +90,7 @@ public class VisualizerService {
       _webSocketFactory = new WebSocketClientFactory();
       _webSocketFactory.start();
       _webSocketClient = _webSocketFactory.newWebSocketClient();
+      _webSocketClient.setMaxBinaryMessageSize(16384000); 
       _incrementalWebSocket = new IncrementalWebSocket();
       _webSocketConnection = _webSocketClient.open(_vehiclePositionsUri,
           _incrementalWebSocket);
