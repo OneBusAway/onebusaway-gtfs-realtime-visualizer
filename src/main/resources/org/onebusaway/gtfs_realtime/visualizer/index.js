@@ -19,7 +19,7 @@ function Init() {
   var hostandport = window.location.hostname + ':' + window.location.port;
 
 	/**
-	 * Create a custom-styled Googe Map with no labels and custom color scheme.
+	 * Create a custom-styled Google Map with no labels and custom color scheme.
 	 */
 	var CreateMap = function() {
 		var map_style = [ {
@@ -95,12 +95,13 @@ function Init() {
 		var path = new google.maps.MVCArray();
 		path.push(point);
 		var marker_opts = {
-			clickable : false,
+			clickable : true,
 			draggable : false,
 			flat : false,
 			icon : icon,
 			map : map,
 			position : point,
+			title : 'id=' + v_data.id
 		};
 		var polyline_opts = {
 			clickable : false,
@@ -192,7 +193,7 @@ function Init() {
 	};
 
 	/**
-	 * We create a WebSocket to listen for vehilce position updates from our
+	 * We create a WebSocket to listen for vehicle position updates from our
 	 * webserver.
 	 */
 	if ("WebSocket" in window) {
