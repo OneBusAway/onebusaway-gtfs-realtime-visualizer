@@ -9,7 +9,7 @@ The goal of the [GTFS Realtime](https://developers.google.com/transit/gtfs-realt
 
 We want to make it easy for developers to work with vehicle position using the GTFS Realtime format, so we've put together a quick demo project that shows how to consume a GTFS Realtime vehicle positions feed.
 
-![Screen Shot](./wiki/ScreenShot.png)
+![Screen Shot](/images/ScreenShot.png)
 
 In the demo project, we'll walk you through a simple Java-based program that consumes a GTFS Realtime feed and visualizes it on a map.
 
