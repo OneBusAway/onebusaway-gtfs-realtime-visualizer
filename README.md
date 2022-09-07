@@ -23,7 +23,7 @@ Before we dig into how the demo application the works, let's see it in action!  
 
 Now that the project has been built, you should be able to run the resulting application bundle:
 
-    java -jar target/onebusaway-GTFS Realtime-visualizer-0.0.1-SNAPSHOT.jar \
+    java -jar target/onebusaway-gtfs-realtime-visualizer-0.0.1-SNAPSHOT.jar \
       --vehiclePositionsUrl=https://cdn.mbta.com/realtime/VehiclePositions.pb
 
 This will start the application up using [MBTA's GTFS Realtime feeds](http://mbta.com/rider_tools/developers/default.asp?id=22393).  When the application starts, you should see a message like:
